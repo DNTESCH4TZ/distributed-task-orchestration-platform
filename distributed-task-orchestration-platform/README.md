@@ -268,10 +268,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👤 Автор
 
-**Dante First**
+**DNTE**
 
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
+- GitHub: 
+- Email: 
 
 ---
 
@@ -298,4 +298,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Made with ❤️ for distributed systems engineers
+
 
