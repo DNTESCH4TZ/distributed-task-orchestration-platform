@@ -1,2 +1,0 @@
-"""Celery configuration and tasks."""
-
