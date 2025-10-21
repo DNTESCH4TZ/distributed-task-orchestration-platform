@@ -1,0 +1,2 @@
+"""RabbitMQ producer and consumer."""
+
