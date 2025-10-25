@@ -1,4 +1,4 @@
-# 🚀 Distributed Task Orchestration Platform DisTorch
+# 🚀 Distributed Task Orchestration Platform
 
 > Production-grade платформа DisTorch для оркестрации распределенных задач в микросервисной архитектуре
 
@@ -149,7 +149,6 @@ API документация: `http://localhost:8000/docs`
 - 📖 **[Обзор проекта](project-context/PROJECT_OVERVIEW.md)** — детальное описание проекта
 - 🔄 **[Инструкции восстановления](project-context/RECOVERY_INSTRUCTIONS.md)** — алгоритм восстановления контекста
 - ⚡ **[Quick Start Guide](project-context/QUICKSTART.md)** — быстрый старт
-- 🎓 **[AI Mentor Template](ai-backend-settings/AI_MENTOR_TEMPLATE.md)** — настройки AI-ментора
 
 ---
 
@@ -269,8 +268,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **DNTE**
 
-- GitHub: 
-- Email: 
+- GitHub: here
+- Email: nope)
 
 ---
 
@@ -282,8 +281,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Status:** 🏗️ In Development  
-**Version:** 0.1.0  
-**Last Updated:** 2025-10-21
+**Version:** 0.1.1  
+**Last Updated:** 2025-10-25
 
 ---
 
@@ -297,4 +296,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Made with ❤️ for distributed systems engineers
+
 

@@ -1,0 +1,65 @@
+# Production dependencies
+# Generated from pyproject.toml
+
+# Core async framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+uvloop==0.19.0
+httptools==0.6.1
+
+# Async HTTP client
+httpx==0.25.2
+aiohttp==3.9.1
+
+# Database - Async
+sqlalchemy[asyncio]==2.0.23
+asyncpg==0.29.0
+alembic==1.12.1
+psycopg2-binary==2.9.9
+
+# Redis - Async
+redis[hiredis]==5.0.1
+hiredis==2.2.3
+
+# Message Queue
+celery[redis,msgpack]==5.3.4
+kombu==5.3.4
+amqp==5.2.0
+
+# Data validation & serialization
+pydantic[email]==2.5.2
+pydantic-settings==2.1.0
+orjson==3.9.10
+msgpack==1.0.7
+
+# Observability
+prometheus-client==0.19.0
+opentelemetry-api==1.21.0
+opentelemetry-sdk==1.21.0
+opentelemetry-instrumentation-fastapi==0.42b0
+opentelemetry-exporter-jaeger==1.21.0
+
+# Monitoring & Logging
+structlog==23.2.0
+python-json-logger==2.0.7
+
+# Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+
+# Utilities
+python-dotenv==1.0.0
+click==8.1.7
+tenacity==8.2.3
+pytz==2023.3
+
+# ClickHouse for analytics
+clickhouse-driver==0.2.6
+
+# CircuitBreaker pattern
+pybreaker==1.0.1
+
+# Rate limiting
+slowapi==0.1.9
+

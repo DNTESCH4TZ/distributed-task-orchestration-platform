@@ -1,0 +1,86 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info
+dist
+build
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Development
+.env
+.env.*
+*.log
+logs/
+
+# Monitoring data
+monitoring/grafana/data/
+monitoring/prometheus/data/
+
+# Terraform
+deploy/terraform/
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Kubernetes
+deploy/kubernetes/
+
+# Project context
+project-context/
+ai-backend-settings/
+
+# Tests
+tests/
+test_*.py
+*_test.py
+
+# Scripts not needed in container
+scripts/seed_data.py
+scripts/health_check.py
+
+# Build artifacts
+*.pyc
+*.pyo
+
