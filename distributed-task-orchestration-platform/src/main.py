@@ -16,8 +16,9 @@ from fastapi.responses import ORJSONResponse
 from src.api.middleware.correlation_id import CorrelationIdMiddleware
 from src.api.middleware.error_handler import ErrorHandlerMiddleware
 from src.api.middleware.metrics import MetricsMiddleware
-from src.api.v1.endpoints import health
+from src.api.v1.endpoints import health, workflows
 from src.core.config import get_settings
+from src.infrastructure.database.base import close_db, init_db
 
 # Use uvloop for faster async performance (2-4x improvement)
 uvloop.install()
@@ -36,7 +37,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     print(f"🚀 Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     print(f"📊 Environment: {settings.ENVIRONMENT}")
 
-    # TODO: Initialize database connection pool
+    # Initialize database
+    if not settings.is_testing:
+        await init_db()
+        print("✅ Database initialized")
+
     # TODO: Initialize Redis connection pool
     # TODO: Initialize metrics collectors
 
@@ -44,7 +49,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     # Shutdown
     print("🛑 Shutting down gracefully...")
-    # TODO: Close database connections
+    await close_db()
+    print("✅ Database connections closed")
     # TODO: Close Redis connections
     # TODO: Flush metrics
 
@@ -104,7 +110,13 @@ def create_app() -> FastAPI:
         tags=["health"],
     )
 
-    # TODO: Add workflow endpoints
+    # Workflow endpoints
+    app.include_router(
+        workflows.router,
+        prefix=settings.API_V1_PREFIX,
+        tags=["workflows"],
+    )
+
     # TODO: Add task endpoints
     # TODO: Add analytics endpoints
     # TODO: Add admin endpoints
@@ -147,4 +159,3 @@ if __name__ == "__main__":
         log_level=settings.LOG_LEVEL.lower(),
         access_log=settings.is_development,
     )
-
