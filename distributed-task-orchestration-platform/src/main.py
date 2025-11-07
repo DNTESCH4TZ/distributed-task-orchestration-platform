@@ -15,10 +15,17 @@ from fastapi.responses import ORJSONResponse
 
 from src.api.middleware.correlation_id import CorrelationIdMiddleware
 from src.api.middleware.error_handler import ErrorHandlerMiddleware
+from src.api.middleware.load_shedding import LoadSheddingMiddleware
 from src.api.middleware.metrics import MetricsMiddleware
+from src.api.middleware.rate_limit import RateLimitMiddleware
+from src.api.middleware.timeout import TimeoutMiddleware
 from src.api.v1.endpoints import health, workflows
 from src.core.config import get_settings
+from src.core.graceful_shutdown import get_shutdown_handler
 from src.infrastructure.database.base import close_db, init_db
+from src.infrastructure.messaging.redis.client import close_redis, get_redis
+from src.infrastructure.monitoring.logging import setup_logging
+from src.infrastructure.monitoring.tracing import setup_tracing
 
 # Use uvloop for faster async performance (2-4x improvement)
 uvloop.install()
@@ -37,22 +44,31 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     print(f"🚀 Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     print(f"📊 Environment: {settings.ENVIRONMENT}")
 
+    # Setup logging
+    setup_logging()
+    print("✅ Logging configured")
+
     # Initialize database
     if not settings.is_testing:
         await init_db()
         print("✅ Database initialized")
 
-    # TODO: Initialize Redis connection pool
-    # TODO: Initialize metrics collectors
+    # Initialize Redis
+    await get_redis()
+    print("✅ Redis connected")
+
+    # Setup graceful shutdown handler
+    shutdown_handler = get_shutdown_handler()
+    shutdown_handler.register_callback(close_db)
+    shutdown_handler.register_callback(close_redis)
+    shutdown_handler.setup_signal_handlers()
+    print("✅ Graceful shutdown configured")
 
     yield
 
     # Shutdown
     print("🛑 Shutting down gracefully...")
-    await close_db()
-    print("✅ Database connections closed")
-    # TODO: Close Redis connections
-    # TODO: Flush metrics
+    await shutdown_handler.shutdown()
 
 
 def create_app() -> FastAPI:
@@ -74,19 +90,34 @@ def create_app() -> FastAPI:
     )
 
     # ========================================
-    # Middleware (order matters!)
+    # Middleware (order matters! From outer to inner)
     # ========================================
 
-    # 1. Metrics middleware (first to measure everything)
+    # 1. Load shedding (first line of defense against overload)
+    app.add_middleware(
+        LoadSheddingMiddleware,
+        cpu_threshold=90.0,
+        memory_threshold=90.0,
+        max_concurrent_requests=1000,
+    )
+
+    # 2. Request timeout (prevent infinite requests)
+    app.add_middleware(TimeoutMiddleware, timeout=settings.REQUEST_TIMEOUT)
+
+    # 3. Rate limiting (per-IP limits)
+    if settings.RATE_LIMIT_ENABLED:
+        app.add_middleware(RateLimitMiddleware)
+
+    # 4. Metrics middleware (measure everything)
     app.add_middleware(MetricsMiddleware)
 
-    # 2. Correlation ID for distributed tracing
+    # 5. Correlation ID for distributed tracing
     app.add_middleware(CorrelationIdMiddleware)
 
-    # 3. Error handling
+    # 6. Error handling
     app.add_middleware(ErrorHandlerMiddleware)
 
-    # 4. CORS
+    # 7. CORS
     if settings.CORS_ORIGINS:
         app.add_middleware(
             CORSMiddleware,
@@ -96,8 +127,14 @@ def create_app() -> FastAPI:
             allow_headers=settings.CORS_ALLOW_HEADERS,
         )
 
-    # 5. GZip compression for responses > 1KB
+    # 8. GZip compression for responses > 1KB
     app.add_middleware(GZipMiddleware, minimum_size=1024)
+
+    # ========================================
+    # Setup Distributed Tracing
+    # ========================================
+    if settings.JAEGER_ENABLED:
+        setup_tracing(app)
 
     # ========================================
     # Routes
